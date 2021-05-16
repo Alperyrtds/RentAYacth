@@ -1,0 +1,76 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using Core.DataAccess.EntityFramework;
+using DataAccess.Abstract;
+using Entities.Concrete;
+using Entities.Dtos;
+
+namespace DataAccess.Concrete.EntityFramework
+{
+    public class EfRentalDal : EfEntityRepositoryBase<Rental, YacthProjectContext>, IRentalDal
+    {
+        public List<RentalDetailDto> GetRentalDetails(Expression<Func<RentalDetailDto, bool>> filter = null)
+        {
+            using (YacthProjectContext context = new YacthProjectContext())
+            {
+                var result = from rental in context.Rentals
+                             join ca in context.Yacth on rental.YacthId equals ca.Id
+                             join co in context.Colors on ca.ColorId equals co.Id
+                             join br in context.Brands on ca.BrandId equals br.Id
+                             join cu in context.Customers on rental.CustomerId equals cu.Id
+                             join us in context.Users on cu.UserId equals us.Id
+                             select new RentalDetailDto
+                             {
+                                 Id = rental.Id,
+                                 BrandName = br.Name,
+                                 ModelName = ca.ModelName,
+                                 ModelYear = ca.ModelYear,
+                                 DailyPrice = ca.DailyPrice,
+                                 Description = ca.Description,
+                                 ColorName = co.Name,
+                                 CompanyName = cu.CompanyName,
+                                 FirstName = us.FirstName,
+                                 LastName = us.LastName,
+                                 RentDate = rental.RentDate,
+                                 ReturnDate = rental.ReturnDate,
+                                 CustomerId = cu.Id
+
+                             };
+                return filter == null ? result.ToList() : result.Where(filter).ToList();
+            }
+        }
+        public List<RentalDetailDto> GetRentalDetailsDto(Expression<Func<RentalDetailDto, bool>> filter = null)
+        {
+            using (YacthProjectContext context = new YacthProjectContext())
+            {
+                var result = from rental in context.Rentals
+                             join ca in context.Yacth on rental.YacthId equals ca.Id
+                             join co in context.Colors on ca.ColorId equals co.Id
+                             join br in context.Brands on ca.BrandId equals br.Id
+                             join cu in context.Customers on rental.CustomerId equals cu.Id
+                             join us in context.Users on cu.UserId equals us.Id
+                             select new RentalDetailDto
+                             {
+                                 Id = rental.Id,
+                                 BrandName = br.Name,
+                                 ModelName = ca.ModelName,
+                                 ModelYear = ca.ModelYear,
+                                 DailyPrice = ca.DailyPrice,
+                                 Description = ca.Description,
+                                 ColorName = co.Name,
+                                 CompanyName = cu.CompanyName,
+                                 FirstName = us.FirstName,
+                                 LastName = us.LastName,
+                                 RentDate = rental.RentDate,
+                                 ReturnDate = rental.ReturnDate,
+                                 CustomerId = cu.Id
+
+                             };
+                return filter == null ? result.ToList() : result.Where(filter).ToList();
+            }
+        }
+    }
+}
